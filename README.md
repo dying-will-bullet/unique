@@ -7,3 +7,7 @@ find . -type f -exec sed -i "s/unique/<YOUR PROJECT NAME>/g" {} \;
 ```
 
 Then [add a license to your project](https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/adding-a-license-to-a-repository).
+
+TODO:
+[ ] snowflake
+[ ] uuid

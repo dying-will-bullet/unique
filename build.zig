@@ -38,10 +38,26 @@ pub fn build(b: *std.Build) void {
     });
 
     const run_main_tests = b.addRunArtifact(main_tests);
-
     // This creates a build step. It will be visible in the `zig build --help` menu,
     // and can be selected like this: `zig build test`
     // This will evaluate the `test` step rather than the default, which is "install".
     const test_step = b.step("test", "Run library tests");
     test_step.dependOn(&run_main_tests.step);
+
+    const other_tests = .{
+        "machine-uid",
+        "snowflake",
+        "fastrand",
+        "uuid",
+    };
+    inline for (other_tests) |name| {
+        const t = b.addTest(.{
+            .root_source_file = .{ .path = "src/" ++ name ++ ".zig" },
+            .target = target,
+            .optimize = optimize,
+        });
+        const run_tests = b.addRunArtifact(t);
+
+        test_step.dependOn(&run_tests.step);
+    }
 }
