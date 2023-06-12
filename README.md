@@ -1,13 +1,36 @@
-# unique
+<h1 align="center"> unique ❄️  </h1>
 
-Create a project using this template and run following command to replace project name.
+[![CI](https://github.com/dying-will-bullet/unique/actions/workflows/ci.yaml/badge.svg)](https://github.com/dying-will-bullet/unique/actions/workflows/ci.yaml)
+![](https://img.shields.io/badge/language-zig-%23ec915c)
 
-```Bash
-find . -type f -exec sed -i "s/unique/<YOUR PROJECT NAME>/g" {} \;
-```
+Unique ID collection.
 
-Then [add a license to your project](https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/adding-a-license-to-a-repository).
+## Status
 
-TODO:
-[ ] snowflake
-[ ] uuid
+🚧 Interested but not implemented yet ✅ Implemented ❌ Not Interested
+
+### UUID Family
+
+- ✅ uuid-v1
+- ✅ uuid-v3
+- ✅ uuid-v4
+- ✅ uuid-v5
+- ✅ uuid-v6
+- ✅ uuid-v7
+- ✅ uuid-v8
+
+### SnowFlake
+
+- ✅ Zig implemention of [sonyflake](https://github.com/sony/sonyflake)
+
+### NanoID
+
+- 🚧 TODO
+
+### Machine ID
+
+- 🚧 WIP Zig implemention of [machineid](https://github.com/denisbrodbeck/machineid)
+
+## LICENSE
+
+MIT License Copyright (c) 2023, Hanaasagi
