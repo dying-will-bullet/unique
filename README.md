@@ -23,6 +23,10 @@ Unique ID collection.
 
 - ✅ Zig implemention of [sonyflake](https://github.com/sony/sonyflake)
 
+### MongoDB ObjectId
+
+- ✅
+
 ### NanoID
 
 - 🚧 TODO

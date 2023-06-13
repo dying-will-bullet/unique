@@ -49,6 +49,7 @@ pub fn build(b: *std.Build) void {
         "snowflake",
         "fastrand",
         "uuid",
+        "mongo",
     };
     inline for (other_tests) |name| {
         const t = b.addTest(.{
