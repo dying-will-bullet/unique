@@ -27,6 +27,10 @@ Unique ID collection.
 
 - ✅
 
+### XID
+
+- 🚧 TODO Zig implemention of [xid](https://github.com/rs/xid)
+
 ### NanoID
 
 - 🚧 TODO
