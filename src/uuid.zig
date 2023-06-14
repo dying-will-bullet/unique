@@ -352,22 +352,25 @@ const Builder = struct {
 // --------------------------------------------------------------------------------
 
 const Node = struct {
-    var is_initialized = std.atomic.Atomic(bool).init(false);
     var node_id: [6]u8 = undefined;
+    var mutex: std.Thread.Mutex = std.Thread.Mutex{};
+    var is_initialized: bool = false;
 
-    const Self = @This();
-    // FIXME:
     fn getNodeId() ![6]u8 {
-        if (Node.is_initialized.load(std.atomic.Ordering.SeqCst)) {
+        if (@atomicLoad(bool, &Node.is_initialized, .Acquire)) {
             return Node.node_id;
         } else {
-            const m = @import("./machine-uid.zig");
-            _ = try m.getMachineId(&Node.node_id);
-            // TODO: maybe a bug here
-            _ = Node.is_initialized.swap(true, std.atomic.Ordering.SeqCst);
-        }
+            @setCold(true);
+            mutex.lock();
+            defer mutex.unlock();
 
-        return Node.node_id;
+            if (!Node.is_initialized) {
+                const m = @import("./machine-uid.zig");
+                _ = try m.getMachineId(&Node.node_id);
+                @atomicStore(bool, &Node.is_initialized, true, .Release);
+            }
+            return Node.node_id;
+        }
     }
 };
 
