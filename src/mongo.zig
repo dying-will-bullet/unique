@@ -33,7 +33,7 @@ const Generator = struct {
     const Self = @This();
 
     pub fn init(machine_id: [3]u8) Self {
-        const pid = @intCast(u32, std.os.linux.getpid());
+        const pid: u32 = @intCast(std.os.linux.getpid());
         const start = std.crypto.random.int(u24);
 
         return Self{
@@ -46,17 +46,17 @@ const Generator = struct {
     pub fn next(self: *Self) ObjectId {
         var obj_id = ObjectId.init();
 
-        const ts = @intCast(u64, std.time.timestamp());
+        const ts: u64 = @intCast(std.time.timestamp());
         const seq = self.counter.fetchAdd(1, std.atomic.Ordering.SeqCst) % (MAX_U24 + 1);
 
         // time-low
-        std.mem.writeIntBig(u32, @ptrCast(*[4]u8, &obj_id.bytes[0]), @truncate(u32, ts));
+        std.mem.writeIntBig(u32, @as(*[4]u8, @ptrCast(&obj_id.bytes[0])), @as(u32, @truncate(ts)));
         // machine id
-        std.mem.writeIntBig(u24, @ptrCast(*[3]u8, &obj_id.bytes[4]), self.machine_id);
+        std.mem.writeIntBig(u24, @as(*[3]u8, @ptrCast(&obj_id.bytes[4])), self.machine_id);
         // pid
-        std.mem.writeIntBig(u16, @ptrCast(*[2]u8, &obj_id.bytes[7]), @truncate(u16, self.pid));
+        std.mem.writeIntBig(u16, @as(*[2]u8, @ptrCast(&obj_id.bytes[7])), @as(u16, @truncate(self.pid)));
         // counter
-        std.mem.writeIntBig(u24, @ptrCast(*[3]u8, &obj_id.bytes[9]), @truncate(u24, seq));
+        std.mem.writeIntBig(u24, @as(*[3]u8, @ptrCast(&obj_id.bytes[9])), @as(u24, @truncate(seq)));
 
         return obj_id;
     }

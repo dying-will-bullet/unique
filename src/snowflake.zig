@@ -55,16 +55,16 @@ const SnowFlake = struct {
             .start_time = start_time,
             .elapsed_time = 0,
             .machine_id = options.machind_id,
-            .sequence = @intCast(u16, 1 << BitLenSequence - 1),
+            .sequence = @intCast(1 << BitLenSequence - 1),
         };
     }
 
     pub fn next(self: *Self) !FlakeID {
-        const maskSequence = @intCast(u16, 1 << BitLenSequence - 1);
+        const maskSequence: u16 = @intCast(1 << BitLenSequence - 1);
         self.mutex.lock();
         defer self.mutex.unlock();
 
-        var current = @intCast(u64, @divTrunc(std.time.nanoTimestamp(), sonyflakeTimeUnit)) - self.start_time;
+        var current = @as(u64, @intCast(@divTrunc(std.time.nanoTimestamp(), sonyflakeTimeUnit))) - self.start_time;
         // current = 27701199131;
 
         if (self.elapsed_time < current) {
@@ -86,7 +86,7 @@ const SnowFlake = struct {
         if (self.elapsed_time >= 1 << BitLenTime) {
             return error.Overflow;
         }
-        const i = @intCast(u64, self.elapsed_time) << (BitLenSequence + BitLenMachineID) | @intCast(u64, self.sequence) << BitLenMachineID | @intCast(u64, self.machine_id);
+        const i = @as(u64, @intCast(self.elapsed_time)) << (BitLenSequence + BitLenMachineID) | @as(u64, @intCast(self.sequence)) << BitLenMachineID | @as(u64, @intCast(self.machine_id));
         var id = FlakeID.init();
         std.mem.writeIntBig(u64, &id.bytes, i);
         return id;

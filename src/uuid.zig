@@ -43,8 +43,8 @@ pub const Timestamp = struct {
     /// Get a timestamp representing the current system time.
     pub fn now(context: anytype) Self {
         const ts = std.time.nanoTimestamp();
-        const seconds = @intCast(u64, @divTrunc(ts, 1_000_000_000));
-        const nanos = @intCast(u32, @rem(ts, 1_000_000_000));
+        const seconds: u64 = @intCast(@divTrunc(ts, 1_000_000_000));
+        const nanos: u32 = @intCast(@rem(ts, 1_000_000_000));
 
         return Self{
             .seconds = seconds,
@@ -243,7 +243,7 @@ const Builder = struct {
     }
 
     pub fn withVersion(self: *Self, version: Version) *Self {
-        self.uuid.bytes[6] = (self.uuid.bytes[6] & 0x0f) | (@enumToInt(version) << 4);
+        self.uuid.bytes[6] = (self.uuid.bytes[6] & 0x0f) | (@intFromEnum(version) << 4);
         return self;
     }
 
@@ -255,7 +255,7 @@ const Builder = struct {
     pub fn fromUnixTimestampMillis(millis: u64, random_bytes: [10]u8) *Self {
         var uuid = Uuid.init();
 
-        std.mem.writeIntBig(u48, @ptrCast(*[6]u8, &uuid.bytes[0]), @truncate(u48, @bitCast(u64, millis)));
+        std.mem.writeIntBig(u48, @as(*[6]u8, @ptrCast(&uuid.bytes[0])), @as(u48, @truncate(@as(u64, @bitCast(millis)))));
 
         //TODO:
         // Version includ here
@@ -275,14 +275,14 @@ const Builder = struct {
         var uuid = Uuid.init();
 
         // time-low
-        std.mem.writeIntBig(u32, @ptrCast(*[4]u8, &uuid.bytes[0]), @truncate(u32, ticks));
+        std.mem.writeIntBig(u32, @as(*[4]u8, @ptrCast(&uuid.bytes[0])), @as(u32, @truncate(ticks)));
         // time-mid
-        std.mem.writeIntBig(u16, @ptrCast(*[2]u8, &uuid.bytes[4]), @truncate(u16, ticks >> 32));
+        std.mem.writeIntBig(u16, @as(*[2]u8, @ptrCast(&uuid.bytes[4])), @as(u16, @truncate(ticks >> 32)));
         // time-high
-        std.mem.writeIntBig(u16, @ptrCast(*[2]u8, &uuid.bytes[6]), @truncate(u16, ticks >> 48));
+        std.mem.writeIntBig(u16, @as(*[2]u8, @ptrCast(&uuid.bytes[6])), @as(u16, @truncate(ticks >> 48)));
 
         // 14 bits of clock sequence
-        std.mem.writeIntBig(u16, @ptrCast(*[2]u8, &uuid.bytes[8]), counter);
+        std.mem.writeIntBig(u16, @as(*[2]u8, @ptrCast(&uuid.bytes[8])), counter);
         // 48 bits of node ID
         std.mem.copy(u8, uuid.bytes[10..], &node_id);
 
@@ -294,17 +294,17 @@ const Builder = struct {
     pub fn fromSortedRFC4122Timestamp(ticks: u64, counter: u16, node_id: [6]u8) *Self {
         var uuid = Uuid.init();
         // time-high
-        std.mem.writeIntBig(u48, @ptrCast(*[6]u8, &uuid.bytes[0]), @truncate(u48, ticks >> 12));
+        std.mem.writeIntBig(u48, @as(*[6]u8, @ptrCast(&uuid.bytes[0])), @as(u48, @truncate(ticks >> 12)));
         //TODO: @Hanaasagi
         // time-low and version
         // const version = @intCast(u16, @enumToInt(Version.SortMac));
         // const time_low_and_version = @intCast(u16, (ticks & 0x0FFF)) | (version << 12);
         // std.mem.writeIntBig(u16, @ptrCast(*[2]u8, &uuid.bytes[6]), @truncate(u16, time_low_and_version));
 
-        std.mem.writeIntBig(u16, @ptrCast(*[2]u8, &uuid.bytes[6]), @truncate(u16, ticks & 0xfff));
+        std.mem.writeIntBig(u16, @as(*[2]u8, @ptrCast(&uuid.bytes[6])), @as(u16, @truncate(ticks & 0xfff)));
 
         // 14 bits of clock sequence
-        std.mem.writeIntBig(u16, @ptrCast(*[2]u8, &uuid.bytes[8]), counter);
+        std.mem.writeIntBig(u16, @as(*[2]u8, @ptrCast(&uuid.bytes[8])), counter);
         // 48 bits of node ID
         std.mem.copy(u8, uuid.bytes[10..], &node_id);
 
@@ -436,7 +436,7 @@ pub fn v7WithParam(ts: Timestamp) Uuid {
     const tuple = ts.toUnix();
     const seconds = tuple[0];
     const nanos = tuple[1];
-    const millis = seconds * 1000 + (@intCast(u64, nanos) / 1_000_000);
+    const millis = seconds * 1000 + (@as(u64, @intCast(nanos)) / 1_000_000);
 
     var bytes: [10]u8 = undefined;
     std.crypto.random.bytes(bytes[0..]);
@@ -552,7 +552,7 @@ test "test v7" {
 test "test v7WithParam" {
     const seconds: u64 = 1_496_854_535;
     const nanos: u32 = 812_946_000;
-    const millis = seconds * 1000 + (@intCast(u64, nanos) / 1_000_000);
+    const millis = seconds * 1000 + (@as(u64, @intCast(nanos)) / 1_000_000);
     var bytes: [10]u8 = .{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
     const uuid = Builder.fromUnixTimestampMillis(millis, bytes).into();
